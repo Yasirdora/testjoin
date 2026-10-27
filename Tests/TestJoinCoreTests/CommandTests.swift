@@ -49,6 +49,30 @@ import TestJoinCore
     #expect(result.stderr.contains("Unknown query field"))
 }
 
+@Test func subMillisecondDurationIsNotPrintedAsZero() throws {
+    let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+    defer { try? FileManager.default.removeItem(at: directory) }
+    let events = directory.appendingPathComponent("events.jsonl")
+    let xml = directory.appendingPathComponent("results.xml")
+    try """
+    {"kind":"test","version":"6.4.0","payload":{"kind":"function","id":"ProbeTests.ProbeTests/cancelsItself()/ProbeTests.swift:4:4","name":"cancelsItself()"}}
+    {"kind":"event","version":"6.4.0","payload":{"kind":"testStarted","instant":{"since1970":1000},"testID":"ProbeTests.ProbeTests/cancelsItself()/ProbeTests.swift:4:4"}}
+    {"kind":"event","version":"6.4.0","payload":{"kind":"testEnded","instant":{"since1970":1000.00026},"messages":[{"symbol":"pass","text":"passed"}],"testID":"ProbeTests.ProbeTests/cancelsItself()/ProbeTests.swift:4:4"}}
+    """.write(to: events, atomically: true, encoding: .utf8)
+    try """
+    <testsuites><testsuite tests="1"><testcase classname="ProbeTests.ProbeTests" name="cancelsItself()" time="0.00026"></testcase></testsuite></testsuites>
+    """.write(to: xml, atomically: true, encoding: .utf8)
+    let result = TestJoinCommand.run([
+        "search",
+        "--events", events.path,
+        "--swift-testing-xml", xml.path,
+        "stream:passed",
+    ])
+    #expect(result.exitCode == 0)
+    #expect(result.stdout == "ProbeTests.ProbeTests.cancelsItself()  stream=passed  xml=passed  duration=0.00026s\n")
+}
+
 @Test func helpExitsZero() {
     let result = TestJoinCommand.run(["--help"])
     #expect(result.exitCode == 0)

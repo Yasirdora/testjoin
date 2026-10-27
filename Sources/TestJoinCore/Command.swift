@@ -197,9 +197,29 @@ private func textLine(_ record: TestRecord) -> String {
     if let status = record.xmlStatus { parts.append("xml=\(status.rawValue)") }
     if !record.tags.isEmpty { parts.append("tags=\(record.tags.joined(separator: ","))") }
     if let duration = record.duration {
-        parts.append(String(format: "duration=%.3fs", duration))
+        parts.append(formatDuration(duration))
     }
     return parts.joined(separator: "  ")
+}
+
+// Three digits match times at or above one millisecond (0.001s stays 0.001s).
+// Shorter runs keep enough digits that a sub-millisecond test is not printed as 0.000s.
+func formatDuration(_ seconds: Double) -> String {
+    if seconds >= 0.001 {
+        return String(format: "duration=%.3fs", seconds)
+    }
+    if seconds > 0 {
+        var trimmed = String(format: "%.6f", seconds)
+        if trimmed.contains(".") {
+            while trimmed.hasSuffix("0") { trimmed.removeLast() }
+            if trimmed.hasSuffix(".") { trimmed.removeLast() }
+        }
+        if trimmed != "0" {
+            return "duration=\(trimmed)s"
+        }
+        return String(format: "duration=%.3es", seconds)
+    }
+    return "duration=0s"
 }
 
 private func recordObject(_ record: TestRecord) -> [String: Any] {
