@@ -1,0 +1,48 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: xcode-27
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Swift version
+        run: swift --version
+
+      - name: Test
+        run: swift test
+
+      # Exit 1 means audit found a disagreement. On Swift 6.4 that is
+      # junit-records-cancel-as-pass for Examples/Probe. A later toolchain
+      # that records the cancellation in JUnit exits 0. Both are a successful
+      # parse. Exit 2 means capture did not write files the parser could read.
+      - name: Capture Examples/Probe and audit it
+        shell: bash
+        run: |
+          set +e
+          swift run testjoin capture --package Examples/Probe --output "$RUNNER_TEMP/probe" --audit > "$RUNNER_TEMP/audit.txt"
+          code=$?
+          set -e
+          echo "capture --audit exited $code"
+          cat "$RUNNER_TEMP/audit.txt"
+          test -s "$RUNNER_TEMP/probe/events.jsonl"
+          test -s "$RUNNER_TEMP/probe/results.xml"
+          if [ "$code" -eq 2 ]; then
+            echo "capture failed to write files audit could parse"
+            exit 1
+          fi
+          if [ "$code" -ne 0 ] && [ "$code" -ne 1 ]; then
+            echo "unexpected exit $code"
+            exit 1
+          fi
+          search_out=$(swift run testjoin search \
+            --events "$RUNNER_TEMP/probe/events.jsonl" \
+            --swift-testing-xml "$RUNNER_TEMP/probe/results.xml" \
+            'tag:camera')
+          printf '%s\n' "$search_out"
+          printf '%s\n' "$search_out" | grep -q 'tags=camera'

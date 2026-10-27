@@ -101,6 +101,28 @@ import TestJoinCore
     #expect(run.findings.isEmpty)
 }
 
+@Test func swift64CaptureJoinsCancelToAPassingTestcase() throws {
+    let run = try joinRun(
+        events: try fixture("swift64-probe.events.jsonl"),
+        swiftTestingXML: try fixture("swift64-probe.swift-testing.xml")
+    )
+    let cancelled = try #require(run.records.first { $0.id == "ProbeTests.ProbeTests.cancelsItself()" })
+    #expect(cancelled.streamStatus == .cancelled)
+    #expect(cancelled.xmlStatus == .passed)
+    #expect(cancelled.source?.filePath == "Examples/Probe/Tests/ProbeTests/ProbeTests.swift")
+    let tagged = try #require(run.records.first { $0.id == "ProbeTests.ProbeTests.taggedPass()" })
+    #expect(tagged.tags == ["camera"])
+    #expect(tagged.streamStatus == .passed)
+    #expect(tagged.xmlStatus == .passed)
+    #expect(run.findings == [
+        Finding(
+            code: "junit-records-cancel-as-pass",
+            testID: "ProbeTests.ProbeTests.cancelsItself()",
+            detail: "Swift Testing cancelled this test. The JUnit testcase has no failure, error, or skipped element, so importers treat it as a pass."
+        ),
+    ])
+}
+
 @Test func missingXCTestFileIsAFindingOnlyWhenAsked() throws {
     let events = """
         {"kind":"test","version":0,"payload":{"kind":"function","id":"ProbeTests.fastTest()/ProbeTests.swift:1:1","name":"fastTest()"}}
