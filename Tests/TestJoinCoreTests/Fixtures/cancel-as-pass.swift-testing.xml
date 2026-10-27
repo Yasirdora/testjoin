@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="TestResults" errors="0" tests="2" failures="0" skipped="0" time="0.002">
+    <testcase classname="ProbeTests" name="cancelledTest()" time="0.001308125" />
+    <testcase classname="ProbeTests" name="fastTest()" time="0.000926708" />
+  </testsuite>
+</testsuites>

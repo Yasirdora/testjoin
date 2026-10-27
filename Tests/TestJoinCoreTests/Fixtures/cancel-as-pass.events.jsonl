@@ -1,0 +1,8 @@
+{"kind":"_metadata","payload":{"name":"Testing Library Version","value":"6.4"},"version":"6.4"}
+{"kind":"test","version":"6.4","payload":{"kind":"function","id":"ProbeTests.cancelledTest()/ProbeTests.swift:27:2","name":"cancelledTest()","isParameterized":false,"displayName":"Cancels when the camera is missing","tags":["camera"],"bugs":[{"id":"12345","title":"Needs a camera"}],"timeLimit":3,"sourceLocation":{"filePath":"Tests/ProbeTests/ProbeTests.swift","line":27,"column":2}}}
+{"kind":"test","version":0,"payload":{"kind":"function","id":"ProbeTests.fastTest()/ProbeTests.swift:9:2","name":"fastTest()","isParameterized":false,"sourceLocation":{"_filePath":"Tests/ProbeTests/ProbeTests.swift","line":9,"column":2}}}
+{"kind":"event","version":"6.4","payload":{"kind":"testStarted","instant":{"absolute":1,"since1970":1000},"testID":"ProbeTests.cancelledTest()/ProbeTests.swift:27:2"}}
+{"kind":"event","version":"6.4","payload":{"kind":"testCancelled","instant":{"absolute":1,"since1970":1000.0005},"messages":[],"testID":"ProbeTests.cancelledTest()/ProbeTests.swift:27:2"}}
+{"kind":"event","version":"6.4","payload":{"kind":"testEnded","instant":{"absolute":1,"since1970":1000.001},"messages":[{"symbol":"skip","text":"Test cancelledTest() was cancelled after 0.001 seconds: \"Needs a camera\""}],"testID":"ProbeTests.cancelledTest()/ProbeTests.swift:27:2"}}
+{"kind":"event","version":0,"payload":{"kind":"testStarted","instant":{"absolute":1,"since1970":1000},"testID":"ProbeTests.fastTest()/ProbeTests.swift:9:2"}}
+{"kind":"event","version":0,"payload":{"kind":"testEnded","instant":{"absolute":1,"since1970":1000.001},"messages":[{"symbol":"pass","text":"Test fastTest() passed"}],"testID":"ProbeTests.fastTest()/ProbeTests.swift:9:2"}}
