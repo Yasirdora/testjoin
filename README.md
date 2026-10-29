@@ -1,5 +1,7 @@
 # testjoin
 
+Flags Swift Testing tests that JUnit XML reports as passed although they were cancelled. Upstream issue: [swiftlang/swift-testing#1979](https://github.com/swiftlang/swift-testing/issues/1979).
+
 `testjoin` joins one Swift Testing run to the JUnit XML a CI importer stores, then queries the difference.
 
 `Test.cancel` is a cancellation in the event stream. On Swift 6.4 it is still a bare `<testcase>` with no `<failure>`, `<error>`, or `<skipped>` element, and importers store that as a pass. `swift test` for the example below exited 0. The event stream is the record that says the test was cancelled.
